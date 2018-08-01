@@ -69,4 +69,13 @@ public class Planet {
     }
     return netForceY;
   }
+
+  public void update(double dt, double fX, double fY) {
+    double aX = fX/this.mass;
+    double aY = fY/this.mass;
+    this.xxVel = this.xxVel + dt * aX;
+    this.yyVel = this.yyVel + dt * aY;
+    this.xxPos = this.xxPos + dt * this.xxVel;
+    this.yyPos = this.yyPos + dt * this.yyVel;
+  }
 }
