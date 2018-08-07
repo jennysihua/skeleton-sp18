@@ -3,7 +3,6 @@
 //Why does type erasure occur?
 
 public class LinkedListDeque<T> {
-    private int size;
 
     private class Node {
         public Node prev;
@@ -17,9 +16,11 @@ public class LinkedListDeque<T> {
         }
     }
 
-    private Node sentinel = new Node(null, null, null);
+    private Node sentinel;
+    private int size;
 
     public LinkedListDeque() {
+        sentinel = new Node(null, null, null);
         size = 0;
         sentinel.prev = sentinel;
         sentinel.next = sentinel;
@@ -40,8 +41,7 @@ public class LinkedListDeque<T> {
     }
 
     public boolean isEmpty() {
-        if(sentinel.next == sentinel) return true;
-        return false;
+        return (size == 0);
     }
 
     public int size() {
@@ -59,24 +59,28 @@ public class LinkedListDeque<T> {
     }
 
     public T removeFirst() {
+        if(size == 0) return null;
         T first = sentinel.next.item;
         sentinel.next = sentinel.next.next;
         sentinel.next.prev = sentinel;
+        size --;
         return first;
     }
 
     public T removeLast() {
+        if(size == 0) return null;
         T last = sentinel.prev.item;
         sentinel.prev = sentinel.prev.prev;
         sentinel.prev.next = sentinel;
+        size --;
         return last;
     }
 
     public T get(int index) {
-        int item = (int) new Object();
         Node p = sentinel;
         while (p.next != sentinel && index > 0) {
             p = p.next;
+            index --;
         }
         if (index == 0) return p.item;
         return null;
@@ -89,5 +93,6 @@ public class LinkedListDeque<T> {
         LinkedListDeque<T> innerList = new LinkedListDeque();
         innerList.sentinel.next = this.sentinel.next.next;
         return innerList.getRecursive(index - 1);
+        //Better to write a recursive "traverse" helper method that takes in node, index.
     }
 }

@@ -1,46 +1,132 @@
+import java.util.Arrays;
+
 public class ArrayDeque<T> {
     private int size;
     private T[] items;
+    private int nextFirst;
+    private int nextLast;
     double resizeBoundaryLow = .25;
-    double resizeBoundaryHigh = .75;
-    double rFactorLow = .5;
-    double rFactorHigh = 1.5;
+    double resizeBoundaryHigh = .6;
+    double USAGE_FACTOR = .5;
+    double RESIZE_FACTOR = 2;
 
     public ArrayDeque() {
         size = 0;
         items = (T[]) new Object[8];
+        nextFirst = 0;
+        nextLast = 0;
     }
 
     public T get(int index) {
         return items[index];
     }
 
-    public T add(T item) {
-        if (size / items.length > resizeBoundaryHigh) {
-            resize((int) rFactorHigh * items.length);
+    public T addFirst(T item) {
+        if ((size / (double) items.length) > resizeBoundaryHigh) {
+            resize((int) RESIZE_FACTOR * items.length);
         }
-        items[size] = item;
+
+        if (nextFirst == nextLast) {
+            nextLast = getNext(nextLast);
+        }
+
+        items[nextFirst] = item;
         size ++;
+        nextFirst = getPrev(nextFirst);
         return item;
     }
 
-    public T remove() {
-        if (size / items.length < resizeBoundaryLow) {
-            resize((int) rFactorLow * items.length);
+    public T addLast(T item) {
+        if ((size / (double) items.length) > resizeBoundaryHigh) {
+            resize((int) RESIZE_FACTOR * items.length);
         }
-        T item = items[size];
-        size --;
-        items[size] = null;
+
+        if (nextFirst == nextLast) {
+            nextFirst = getPrev(nextFirst);
+        }
+
+        items[nextLast] = item;
+        size ++;
+        nextLast = getNext(nextLast);
         return item;
+    }
+
+    public T removeFirst() {
+        if (size / (double) items.length < resizeBoundaryLow) {
+            resize((int) USAGE_FACTOR * items.length);
+        }
+
+        T item = items[getNext(nextFirst)];
+        size --;
+        items[getNext(nextFirst)] = null;
+        nextFirst = getNext(nextFirst);
+        return item;
+    }
+
+    public T removeLast() {
+        if (size / (double) items.length < resizeBoundaryLow) {
+            resize((int) USAGE_FACTOR * items.length);
+        }
+        T item = items[getPrev(nextLast)];
+        items[getPrev(nextLast)] = null;
+        nextLast = getPrev(nextLast);
+        size --;
+        return item;
+    }
+
+    public int getNext(int index) {
+        return ((index + 1) % items.length + items.length) % items.length;
+    }
+
+    public int getPrev(int index) {
+        return ((index - 1) % items.length + items.length) % items.length;
     }
 
     public int size() {
         return size;
     }
 
-    public void resize(int newSize) {
-        T[] newItems = (T[]) new Object[newSize];
-        System.arraycopy(items, 0, newItems, 0, size);
-        items = newItems;
+    public void printDeque() {
+        String deque = "";
+        int counter = 0;
+        while(counter != size) {
+            deque += items[(nextFirst + 1 + counter) % items.length].toString();
+            counter ++;
+        }
     }
+
+    public void resize(int newSize) {
+        //Works for resizing to larger array, but not to smaller.
+        //If data exists in the middle of the array this will cause an array bounds exception.
+        T[] newItems = (T[]) new Object[newSize];
+        int newFirst = newItems.length - (items.length - getNext(nextFirst));
+
+        System.arraycopy(items, 0, newItems, 0, nextLast);
+        System.arraycopy(items, getNext(nextFirst), newItems, newFirst, items.length - getNext(nextFirst));
+        items = newItems;
+        nextFirst = getPrev(newFirst);
+    }
+
+    public static void main (String[] args) {
+        ArrayDeque test = new ArrayDeque();
+        for(int i = 0; i < 3; i++) {
+            test.addFirst(i);
+            System.out.println(Arrays.toString(test.items));
+        }
+        for(int i = 3; i < 8; i++) {
+            test.addLast(i);
+            System.out.println(Arrays.toString(test.items));
+        }
+        for(int i = 0; i < 3; i++) {
+            test.removeFirst();
+            System.out.println(Arrays.toString(test.items));
+        }
+        for(int i = 0; i < 3; i++) {
+            test.removeLast();
+            System.out.println(Arrays.toString(test.items));
+        }
+
+    }
+
+    //getRecursive
 }
