@@ -3,9 +3,9 @@
 //Why does type erasure occur?
 
 public class LinkedListDeque<T> {
-    int size;
+    private int size;
 
-    public class Node {
+    private class Node {
         public Node prev;
         public T item;
         public Node next;
@@ -17,7 +17,7 @@ public class LinkedListDeque<T> {
         }
     }
 
-    public Node sentinel = new Node(null, null, null);
+    private Node sentinel = new Node(null, null, null);
 
     public LinkedListDeque() {
         size = 0;
