@@ -40,8 +40,8 @@ public class LinkedListDeque<T> {
     }
 
     public boolean isEmpty() {
-        if(sentinel.next == sentinel) return false;
-        return true;
+        if(sentinel.next == sentinel) return true;
+        return false;
     }
 
     public int size() {
@@ -50,11 +50,12 @@ public class LinkedListDeque<T> {
 
     public void printDeque() {
         String deque = "";
-        Node p = sentinel;
+        Node p = sentinel.next;
+        System.out.println(p.item);
         while (p.next != sentinel) {
             deque += p.item.toString();
+            p = p.next;
         }
-        System.out.println(deque);
     }
 
     public T removeFirst() {
