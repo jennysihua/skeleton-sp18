@@ -82,4 +82,12 @@ public class LinkedListDeque<T> {
         return null;
     }
 
+    //Have not tested this recursive method.
+    public T getRecursive(int index) {
+        if(sentinel.next == sentinel) return null;
+        if(index == 0) return sentinel.next.item;
+        LinkedListDeque<T> innerList = new LinkedListDeque();
+        innerList.sentinel.next = this.sentinel.next.next;
+        return innerList.getRecursive(index - 1);
+    }
 }
