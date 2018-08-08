@@ -23,7 +23,7 @@ public class ArrayDeque<T> {
 
     public T addFirst(T item) {
         if ((size / (double) items.length) > resizeBoundaryHigh) {
-            resize((int) RESIZE_FACTOR * items.length);
+            resize((int) (RESIZE_FACTOR * items.length));
         }
 
         if (nextFirst == nextLast) {
@@ -38,7 +38,7 @@ public class ArrayDeque<T> {
 
     public T addLast(T item) {
         if ((size / (double) items.length) > resizeBoundaryHigh) {
-            resize((int) RESIZE_FACTOR * items.length);
+            resize((int) (RESIZE_FACTOR * items.length));
         }
 
         if (nextFirst == nextLast) {
@@ -53,7 +53,7 @@ public class ArrayDeque<T> {
 
     public T removeFirst() {
         if (size / (double) items.length < resizeBoundaryLow) {
-            resize((int) USAGE_FACTOR * items.length);
+            resize((int) (USAGE_FACTOR * items.length));
         }
 
         T item = items[getNext(nextFirst)];
@@ -65,7 +65,7 @@ public class ArrayDeque<T> {
 
     public T removeLast() {
         if (size / (double) items.length < resizeBoundaryLow) {
-            resize((int) USAGE_FACTOR * items.length);
+            resize((int) (USAGE_FACTOR * items.length));
         }
         T item = items[getPrev(nextLast)];
         items[getPrev(nextLast)] = null;
@@ -96,15 +96,13 @@ public class ArrayDeque<T> {
     }
 
     public void resize(int newSize) {
-        //Works for resizing to larger array, but not to smaller.
-        //If data exists in the middle of the array this will cause an array bounds exception.
         T[] newItems = (T[]) new Object[newSize];
-        int newFirst = newItems.length - (items.length - getNext(nextFirst));
-
-        System.arraycopy(items, 0, newItems, 0, nextLast);
-        System.arraycopy(items, getNext(nextFirst), newItems, newFirst, items.length - getNext(nextFirst));
+        for (int i = 0; i < size; i++) {
+            newItems[i] = items[(getNext(nextFirst) + i) % items.length];
+        }
         items = newItems;
-        nextFirst = getPrev(newFirst);
+        nextFirst = items.length - 1;
+        nextLast = size;
     }
 
     public static void main (String[] args) {
